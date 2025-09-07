@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velora Gaming Hub</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .wallet-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .balance {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .unclaimed {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #f97316 100%);
+        }
+
+        .game-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: #ffd700;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .game-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .game-desc {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Slot Machine Styles */
+        .slot-machine {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .slots-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .slot {
+            width: 60px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--dark);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .spin-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .spin-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Dice Game Styles */
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--dark);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Animation Classes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes win {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .spinning {
+            animation: spin 0.5s infinite linear;
+        }
+
+        .win-animation {
+            animation: win 0.5s ease infinite;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .balance {
+                font-size: 2rem;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Velora Gaming Hub</h1>
+            <p>Play • Earn • Win • Repeat</p>
+        </div>
+
+        <div class="wallet-card">
+            <div class="balance" id="balance">0 VEL</div>
+            <div class="unclaimed" id="unclaimed">Loading...</div>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="claimBonus()">🎁 Claim Bonus</button>
+                <button class="btn" onclick="showModal('referral')">📣 Refer Friends</button>
+                <button class="btn" onclick="showModal('buy')">💰 Buy Tokens</button>
+                <button class="btn" onclick="showModal('leaderboard')">🏆 Leaderboard</button>
+            </div>
+        </div>
+
+        <div class="game-section">
+            <h2 class="section-title">🎯 Premium Games</h2>
+            <div class="games-grid">
+                <div class="game-card" onclick="startGame('slots')">
+                    <div class="game-icon">🎰</div>
+                    <div class="game-title">Slot Machine</div>
+                    <div class="game-desc">Spin to win big!</div>
+                </div>
+                
+                <div class="game-card" onclick="startGame('dice')">
+                    <div class="game-icon">🎲</div>
+                    <div class="game-title">Dice Duel</div>
+                    <div class="game-desc">Beat the house!</div>
+                </div>
+                
+                <div class="game-card" onclick="startGame('wheel')">
+                    <div class="game-icon">🎡</div>
+                    <div class="game-title">Fortune Wheel</div>
+                    <div class="game-desc">Spin for prizes!</div>
+                </div>
+                
+                <div class="game-card" onclick="startGame('blackjack')">
+                    <div class="game-icon">🃏</div>
+                    <div class="game-title">Blackjack</div>
+                    <div class="game-desc">21 or bust!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-section">
+            <h2 class="section-title">💸 Earn More</h2>
+            <div class="games-grid">
+                <div class="game-card" onclick="completeDaily()">
+                    <div class="game-icon">📅</div>
+                    <div class="game-title">Daily Reward</div>
+                    <div class="game-desc">+25,000 VEL/day</div>
+                </div>
+                
+                <div class="game-card" onclick="showModal('referral')">
+                    <div class="game-icon">👥</div>
+                    <div class="game-title">Refer Friends</div>
+                    <div class="game-desc">+100,000 VEL/friend</div>
+                </div>
+                
+                <div class="game-card" onclick="startQuiz()">
+                    <div class="game-icon">❓</div>
+                    <div class="game-title">Crypto Quiz</div>
+                    <div class="game-desc">Test your knowledge</div>
+                </div>
+                
+                <div class="game-card" onclick="showModal('achievements')">
+                    <div class="game-icon">🏆</div>
+                    <div class="game-title">Achievements</div>
+                    <div class="game-desc">Complete challenges</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Modals -->
+    <div id="gameModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideModal()">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // User data structure
+        let userData = {
+            balance: 0,
+            unclaimed: 0,
+            referralCode: '',
+            lastDaily: null,
+            gamesPlayed: 0
+        };
+
+        // Game data
+        const gameData = {
+            slots: {
+                symbols: ['🍒', '🍋', '🍊', '🍇', '🔔', '⭐', '7️⃣'],
+                payouts: {
+                    '7️⃣7️⃣7️⃣': 1000000,
+                    '⭐⭐⭐': 500000,
+                    '🔔🔔🔔': 250000,
+                    '🍇🍇🍇': 100000,
+                    '🍊🍊🍊': 50000,
+                    '🍋🍋🍋': 25000,
+                    '🍒🍒🍒': 10000
+                }
+            },
+            dice: {
+                minBet: 10000,
+                maxBet: 100000
+            }
+        };
+
+        // Initialize
+        async function init() {
+            tg.MainButton.setText("🔄 Refresh").show().onClick(refreshData);
+            await loadUserData();
+            createConfetti();
+        }
+
+        // Load user data (simulated API call)
+        async function loadUserData() {
+            // Show loading
+            document.getElementById('balance').innerHTML = '<span class="loading"></span>';
+            document.getElementById('unclaimed').textContent = 'Loading...';
+            
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Mock data - replace with real API calls
+            userData = {
+                balance: 1250000,
+                unclaimed: 350000,
+                referralCode: 'VEL' + Math.floor(1000 + Math.random() * 9000),
+                lastDaily: localStorage.getItem('lastDaily'),
+                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0')
+            };
+            
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('balance').textContent = formatNumber(userData.balance) + ' VEL';
+            document.getElementById('unclaimed').textContent = formatNumber(userData.unclaimed) + ' VEL available to claim';
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Game functions
+        function startGame(gameType) {
+            switch(gameType) {
+                case 'slots':
+                    showSlotsGame();
+                    break;
+                case 'dice':
+                    showDiceGame();
+                    break;
+                case 'wheel':
+                    showWheelGame();
+                    break;
+                case 'blackjack':
+                    showBlackjackGame();
+                    break;
+            }
+        }
+
+        function showSlotsGame() {
+            const content = `
+                <h2>🎰 Slot Machine</h2>
+                <p>Spin to win big prizes!</p>
+                <div class="slot-machine">
+                    <div class="slots-container">
+                        <div class="slot" id="slot1">🍒</div>
+                        <div class="slot" id="slot2">🍋</div>
+                        <div class="slot" id="slot3">🍊</div>
+                    </div>
+                    <button class="spin-btn" onclick="spinSlots()">🎯 SPIN (10,000 VEL)</button>
+                </div>
+            `;
+            showModal('slots', content);
+        }
+
+        async function spinSlots() {
+            if (userData.balance < 10000) {
+                tg.showAlert("You need at least 10,000 VEL to play!");
+                return;
+            }
+
+            // Deduct bet
+            userData.balance -= 10000;
+            updateUI();
+
+            const slots = ['slot1', 'slot2', 'slot3'];
+            const spinBtn = document.querySelector('.spin-btn');
+            spinBtn.disabled = true;
+            spinBtn.textContent = "SPINNING...";
+
+            // Spin animation
+            slots.forEach((slotId, index) => {
+                const slot = document.getElementById(slotId);
+                slot.classList.add('spinning');
+                
+                // Stop each slot at different times
+                setTimeout(() => {
+                    const randomSymbol = gameData.slots.symbols[
+                        Math.floor(Math.random() * gameData.slots.symbols.length)
+                    ];
+                    slot.textContent = randomSymbol;
+                    slot.classList.remove('spinning');
+                }, 1000 + (index * 500));
+            });
+
+            // Check result
+            setTimeout(() => {
+                const result = slots.map(slotId => 
+                    document.getElementById(slotId).textContent
+                ).join('');
+
+                let winnings = 0;
+                for (const [pattern, payout] of Object.entries(gameData.slots.payouts)) {
+                    if (result === pattern) {
+                        winnings = payout;
+                        break;
+                    }
+                }
+
+                if (winnings > 0) {
+                    userData.unclaimed += winnings;
+                    showWinAnimation(winnings);
+                    tg.showPopup({
+                        title: "🎉 JACKPOT!",
+                        message: `You won ${formatNumber(winnings)} VEL!`
+                    });
+                } else {
+                    tg.showAlert("No win this time. Try again!");
+                }
+
+                spinBtn.disabled = false;
+                spinBtn.textContent = "🎯 SPIN (10,000 VEL)";
+                updateUI();
+                
+            }, 3000);
+        }
+
+        function showWinAnimation(amount) {
+            // Create confetti effect
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animation = `confetti ${Math.random() * 2 + 1}s ease-in-out forwards`;
+                    confetti.style.background = ['#ffd700', '#ef4444', '#10b981', '#3b82f6'][i % 4];
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        // Modal functions
+        function showModal(type, customContent = null) {
+            let content = '';
+            
+            switch(type) {
+                case 'referral':
+                    content = `
+                        <h2>📣 Refer Friends</h2>
+                        <p>Share your link and earn 100,000 VEL for each friend!</p>
+                        <input type="text" id="referralLink" value="https://t.me/${tg.initDataUnsafe.user?.username || 'YourBot'}_bot?start=${userData.referralCode}" readonly>
+                        <button class="btn" onclick="copyReferral()" style="margin-top: 15px;">📋 Copy Link</button>
+                    `;
+                    break;
+                    
+                case 'buy':
+                    content = `
+                        <h2>💰 Buy VEL Tokens</h2>
+                        <p>Coming soon! Connect your wallet to purchase VEL tokens.</p>
+                        <div style="display: grid; gap: 10px; margin-top: 20px;">
+                            <button class="btn">100,000 VEL - $10</button>
+                            <button class="btn">500,000 VEL - $45</button>
+                            <button class="btn">1,000,000 VEL - $80</button>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    content = customContent;
+            }
+            
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('gameModal').style.display = 'flex';
+        }
+
+        function hideModal() {
+            document.getElementById('gameModal').style.display = 'none';
+        }
+
+        function copyReferral() {
+            const link = document.getElementById('referralLink');
+            link.select();
+            document.execCommand('copy');
+            tg.showPopup({
+                title: "✅ Copied!",
+                message: "Referral link copied to clipboard!"
+            });
+        }
+
+        function claimBonus() {
+            if (userData.unclaimed > 0) {
+                userData.balance += userData.unclaimed;
+                const claimed = userData.unclaimed;
+                userData.unclaimed = 0;
+                
+                tg.showPopup({
+                    title: "🎉 Bonus Claimed!",
+                    message: `You received ${formatNumber(claimed)} VEL!`
+                });
+                
+                updateUI();
+            } else {
+                tg.showAlert("No bonuses available to claim!");
+            }
+        }
+
+        function createConfetti() {
+            // Pre-create confetti elements
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.display = 'none';
+                document.body.appendChild(confetti);
+            }
+        }
+
+        function refreshData() {
+            loadUserData();
+            tg.showPopup({
+                title: "🔄 Refreshed",
+                message: "Your data has been updated!"
+            });
+        }
+
+        // Initialize the app
+        init();
+        
+        // Handle Telegram events
+        tg.onEvent('viewportChanged', tg.expand);
+        tg.onEvent('backButtonClicked', hideModal);
+
+    </script>
+</body>
+</html>
